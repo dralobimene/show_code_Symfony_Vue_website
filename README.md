@@ -46,3 +46,6 @@ Dépôt qui contient
   Il est préférable de créer un environnement virtuel avant d'exécuter le script shell "pip_install.sh", histoire de ne pas polluer votre systeme avec des librairies que vous ne souhaitez pas ou qui ont des versions différentes.
 
 Le projet tel quel ne fonctionnera pas si vous téléchargez ces fichiers. Ce dépôt ne sert que de "vitrine" pour montrer 1 (petite partie de ce que j'ai fait pour la certif de la formation CDA).
+
+algorithme BSP:
+https://github.com/fsd66/py-dungeon
