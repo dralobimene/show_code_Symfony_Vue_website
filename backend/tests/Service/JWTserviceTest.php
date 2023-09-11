@@ -1,0 +1,101 @@
+<?php
+
+namespace App\Tests\Service;
+
+use App\Service\JWTService;
+use PHPUnit\Framework\TestCase;
+
+class JWTserviceTest extends TestCase
+{
+    /**
+     * @var JWTService
+     */
+    private $jwtService;
+
+    // ========================================================================
+
+    /**
+     * Initialisation avant chaque test.
+     */
+    protected function setUp(): void
+    {
+        $this->jwtService = new JWTService();
+    }
+
+    // ========================================================================
+
+    /**
+     * Teste la génération d'un token JWT.
+     */
+    public function testGenerate(): void
+    {
+        $header = ['alg' => 'HS256', 'typ' => 'JWT'];
+        $payload = ['user_id' => 1, 'role' => 'admin'];
+        $secret = $_ENV['JWT_SECRET'];
+        $validity = 3600;
+
+        $token = $this->jwtService->generate($header, $payload, $secret, $validity);
+
+        $this->assertTrue($this->jwtService->isValid($token));
+        $this->assertFalse($this->jwtService->isExpired($token));
+        $this->assertTrue($this->jwtService->check($token, $secret));
+        $this->assertTrue($this->jwtService->validate($token, $secret));
+    }
+
+    // ========================================================================
+
+    /**
+     * Teste la vérification de validité d'un token JWT.
+     */
+    public function testIsValid(): void
+    {
+        $validToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjpudWxsLCJpYXQiOjE2ODc1OTA0MDYsImV4cCI6MTY4NzYwMTIwNn0.r01zj6XdNMUDMx7xNkdwy7sWCSf1izmIntQ9BmEJrd4';
+        $invalidToken = 'invalidToken';
+
+        $this->assertTrue($this->jwtService->isValid($validToken));
+        $this->assertFalse($this->jwtService->isValid($invalidToken));
+    }
+
+    // ========================================================================
+
+    /**
+     * Teste la génération et la validation d'un token JWT.
+     */
+    public function testGenerateToken()
+    {
+        // Crée une instance du service JWTService
+        $jwtService = new JWTService();
+
+        // Définit les données du header et du payload
+        $header = ['alg' => 'HS256', 'typ' => 'JWT'];
+        $payload = ['user' => 'user123'];
+
+        // Définit le secret
+        $secret = $_ENV['JWT_SECRET'];
+
+        // Génère le token JWT
+        $token = $jwtService->generate($header, $payload, $secret);
+
+        // Décrypte le token et récupère le payload
+        $decodedPayload = $jwtService->decode($token);
+
+        // Vérifie que le token est une chaîne non vide
+        $this->assertNotEmpty($token);
+
+        // Vérifie que le token est valide
+        $this->assertTrue($jwtService->isValid($token));
+
+        // Vérifie que le token n'est pas expiré
+        $this->assertFalse($jwtService->isExpired($token));
+
+        // Vérifie que la vérification du token renvoie true
+        $this->assertTrue($jwtService->validate($token, $secret));
+
+        // Vérifie que le payload est un tableau
+        $this->assertIsArray($decodedPayload);
+
+        // Vérifie que le payload contient les données attendues
+        $this->assertEquals('user123', $decodedPayload['user']);
+    }
+
+}

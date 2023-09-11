@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Activation</title>
+</head>
+<body>
+    <h1>Hello {{ user.nickname }},</h1>
+    <p>Welcome to our platform!</p>
+    <p>To enjoy authenticated area, you need to activate your account, please click the link below:</p>
+    <p><a href="{{ absolute_url(path('app_check_token', {token: token})) }}">cliquez</a></p>
+    <p>Or you can copy paste next to your web browser.</p>
+    <p><a href="{{ absolute_url(path('app_check_token', {token: token})) }}">{{ absolute_url(path('app_check_token', {token: token})) }}</a></p>
+    <p>Beware: this link will expire for 3 hours.</p>
+    <p>the next ns amene a localhost:5173</p>
+    <p><a href="https://localhost:5173/view03_check_token">Confirm your email</a></p>
+    <!-- The rest of the email template remains the same -->
+    <p><a href="https://localhost:5173/view03_check_token/{{ token }}">Confirm your email</a></p>
+    <br>
+    <br>
+    <p><a href="https://localhost:5173/view07_approve/{{ user.token }}">Confirm sur 5173</a></p>
+    <p><a href="https://localhost:8000/approve/{{ user.token }}">Confirm sur 8000</a></p>
+    <br>
+    <br>
+    <p><a href="{{ confirmationLink }}">Click here to activate your account</a></p>
+    <p>Or you can copy paste the following link to your web browser:</p>
+    <p><a href="{{ confirmationLink }}">{{ confirmationLink }}</a></p>
+</body>
+</html>

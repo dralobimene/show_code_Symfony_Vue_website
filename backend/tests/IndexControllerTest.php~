@@ -1,0 +1,119 @@
+<?php
+// fichier: tests/IndexControllerTest.php
+
+namespace App\Tests;
+
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
+use App\Service\JWTService;
+use App\Document\User;
+
+class IndexControllerTest extends WebTestCase
+{
+    // Déclaration de la propriété JWTService
+    private JWTService $jwtService;
+
+    // ========================================================================
+    // La méthode setUp est exécutée avant chaque test
+    public function setUp(): void
+    {
+        $this->jwtService = new JWTService();
+    }
+
+    // ========================================================================
+    /**
+     * Teste l'accès à la route '/index' sans token d'authentification.
+     */
+    public function testIndexWithoutToken(): void
+    {
+        // Arrange
+        $client = static::createClient();
+
+        // Act 
+        $client->request('GET', '/index');
+
+        // Convertit la réponse JSON en objet PHP
+        $responseObject = json_decode($client->getResponse()->getContent());
+
+        // Assert
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Error', $responseObject->status);
+        $this->assertEquals('Invalid token', $responseObject->message);
+        $this->assertIsArray($responseObject->comments);
+        $this->assertIsArray($responseObject->replies);
+    }
+
+    // ========================================================================
+    /**
+     * Teste l'accès à la route '/index' avec un token d'authentification.
+     */
+    public function testIndexWithToken(): void
+    {
+        // Arrange
+        $client = static::createClient();
+
+        // Récupération des services et paramètres nécessaires
+        $container = $client->getContainer();
+        $jwtSecret = $container->getParameter('app.jwtsecret');
+        $dm = $container->get('doctrine_mongodb.odm.default_document_manager');
+
+        // Création et persistance de l'utilisateur de test
+        $user = $this->createTestUser($dm);
+
+        // Génération du token JWT
+        $token = $this->generateJwtToken($user->getId(), $jwtSecret);
+
+        // Act
+        $client->request(
+            'GET', 
+            '/index', 
+            [], 
+            [], 
+            ['HTTP_AUTHORIZATION' => 'Bearer '.$token]
+        );
+
+        // Conversion de la réponse JSON en objet PHP
+        $responseObject = json_decode($client->getResponse()->getContent());
+
+        // Assert
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertEquals('Success', $responseObject->status);
+        $this->assertIsArray($responseObject->comments);
+        $this->assertIsArray($responseObject->replies);
+    }
+
+    // ========================================================================
+    // Méthode helper pour créer l'utilisateur de test
+    private function createTestUser($dm): User
+    {
+        $user = new User();
+        $user->setNickname('testuser');
+        $user->setEmail('testuser@example.com');
+        $user->setPassword(password_hash('password', PASSWORD_BCRYPT));
+        $user->setIsVerified(true);
+        $user->setRoles(['ROLE_USER']);
+        $user->setIsNew(false);
+        $user->setInscriptionDate(new \DateTime());
+
+        $dm->persist($user);
+        $dm->flush();
+
+        return $user;
+    }
+
+    // ========================================================================
+    // Méthode helper pour générer le token JWT
+    private function generateJwtToken(string $userId, string $jwtSecret): string
+    {
+        $header = [
+            'typ' => 'JWT',
+            'alg' => 'HS256'
+        ];
+
+        $payload = [
+            'user_id' => $userId
+        ];
+
+        return $this->jwtService->generate($header, $payload, $jwtSecret);
+    }
+}
