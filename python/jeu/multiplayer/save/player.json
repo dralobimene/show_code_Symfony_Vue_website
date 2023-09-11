@@ -1,0 +1,21 @@
+{
+    "name": "gfgdgdfdgd",
+    "strength": 87,
+    "attack": 100,
+    "defense": 100,
+    "life": 100,
+    "magic": 100,
+    "position": [
+        0,
+        0
+    ],
+    "color": [
+        0,
+        255,
+        0
+    ],
+    "radius": 8,
+    "speed": 16,
+    "stair_actuel": "multiplayer/save/stairs_json/stair_1.json",
+    "id": "ixg4jEiuDCh7Y0VDchOU"
+}

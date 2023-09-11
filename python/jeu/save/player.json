@@ -1,0 +1,20 @@
+{
+    "name": "gfgfdgdfdfg",
+    "strength": 50,
+    "attack": 100,
+    "defense": 100,
+    "life": 100,
+    "magic": 100,
+    "position": [
+        320.0,
+        176.0
+    ],
+    "color": [
+        0,
+        255,
+        0
+    ],
+    "radius": 8,
+    "speed": 16,
+    "stair_actuel": "save/stairs_json/stair_1.json"
+}

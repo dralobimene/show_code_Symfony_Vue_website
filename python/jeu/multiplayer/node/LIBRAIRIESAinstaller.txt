@@ -1,0 +1,16 @@
+npx ts-node server.ts
+npm install --save-dev @types/ws
+npm install mongodb
+npm i --save-dev @types/jsonwebtoken
+npm i jsonwebtoken
+npm i socket.io
+npm i mongoose
+npm i json-stringify-safe
+npm install ts-node
+npm install typescript
+npm init
+
+
+pip install pyjwt
+pip install websocket-client
+
